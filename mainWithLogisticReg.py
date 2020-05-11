@@ -115,3 +115,21 @@ def accuracy(X, y, theta, cutoff):
     print(acc * 100)
     
 accuracy(X, y.flatten(), theta_optimized, 0.5)
+
+# ----------------------------------------------------------------- #
+# the shorter approach to the above is as follows:
+from sklearn.linear_model import LogisticRegression
+
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.25,random_state=0)
+logreg = LogisticRegression()
+logreg.fit(X_train,y_train)
+
+test_data = test_data.fillna(0)
+y_pred = logreg.predict(test_data)
+
+df = pd.DataFrame(y_pred)
+
+df.T.to_csv('final.csv')
+
+print("Accuracy:",metrics.accuracy_score(y_test, df.T))
+
