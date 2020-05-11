@@ -121,6 +121,7 @@ accuracy(X, y.flatten(), theta_optimized, 0.5)
 from sklearn.linear_model import LogisticRegression
 
 X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.25,random_state=0)
+
 logreg = LogisticRegression()
 logreg.fit(X_train,y_train)
 
