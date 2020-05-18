@@ -14,6 +14,22 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
 
+from sklearn.neighbors import KNeighborsClassifier  
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn import tree
+from sklearn.naive_bayes import GaussianNB
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import train_test_split 
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
+from sklearn import svm
+from sklearn.metrics import accuracy_score, make_scorer,f1_score, precision_score, recall_score, confusion_matrix
+
+from sklearn.impute import SimpleImputer
+
+
 train_data = pd.read_csv("train.csv")
 train_data.info()
 
@@ -120,6 +136,8 @@ accuracy(X, y.flatten(), theta_optimized, 0.5)
 # the shorter approach to the above is as follows:
 from sklearn.linear_model import LogisticRegression
 
+scaled_features_df = pd.DataFrame(scaled_features, index=df.index, columns=df.columns)
+
 X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.25,random_state=0)
 
 logreg = LogisticRegression()
@@ -133,4 +151,34 @@ df = pd.DataFrame(y_pred)
 df.T.to_csv('final.csv')
 
 print("Accuracy:",metrics.accuracy_score(y_test, df.T))
+
+ln = LinearRegression()
+svm1 = svm.SVC(kernel='linear',random_state = 42)
+svm2 = svm.SVC(kernel='rbf',random_state = 42) 
+lr = LogisticRegression(random_state = 42)
+gb = GaussianNB()
+rf = RandomForestClassifier(random_state = 42)
+knn = KNeighborsClassifier(n_neighbors=15)
+tree = tree.DecisionTreeClassifier()
+models = {"Logistic Regression": lr, 'DecisionTreeClassifier' : tree, 
+          "Random Forest": rf, "svm linear": svm1 , "svm rbf": svm2,
+          "KNeighborsClassifier": knn ,'GaussianNB': gb, 
+          'Linear Regression' :ln}
+l=[]
+for model in models:
+    l.append(make_pipeline(SimpleImputer(),  models[model]))
+    
+i=0
+for Classifier in l:    
+    accuracy = cross_val_score(Classifier,X_train,Y_train,scoring='accuracy',cv=5)
+    print("===", [*models][i] , "===")
+    print("accuracy = ",accuracy)
+    print("accuracy.mean = ", accuracy.mean())
+    print("accuracy.variance = ", accuracy.var())
+    i=i+1
+    print("")
+
+model1 = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=1)
+model1.fit(scaled_features_df, y)
+y1_test = model1.predict()
 
