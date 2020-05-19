@@ -152,14 +152,14 @@ df.T.to_csv('final.csv')
 
 print("Accuracy:",metrics.accuracy_score(y_test, df.T))
 
-ln = LinearRegression()
-svm1 = svm.SVC(kernel='linear',random_state = 42)
-svm2 = svm.SVC(kernel='rbf',random_state = 42) 
-lr = LogisticRegression(random_state = 42)
+lr = LogisticRegression()
+svm1 = svm.SVC(kernel='linear')
+svm2 = svm.SVC(kernel='rbf') 
+lr = LogisticRegression()
 gb = GaussianNB()
-rf = RandomForestClassifier(random_state = 42)
+rf = RandomForestClassifier()
 knn = KNeighborsClassifier(n_neighbors=15)
-tree = tree.DecisionTreeClassifier()
+
 models = {"Logistic Regression": lr, 'DecisionTreeClassifier' : tree, 
           "Random Forest": rf, "svm linear": svm1 , "svm rbf": svm2,
           "KNeighborsClassifier": knn ,'GaussianNB': gb, 

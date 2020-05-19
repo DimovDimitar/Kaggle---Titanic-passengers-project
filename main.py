@@ -14,7 +14,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn import metrics
 
 train_data = pd.read_csv("train.csv")
-train_data.info()
+test_data = pd.read_csv("test.csv")
 
 train_data = train_data.drop(["Cabin"], axis=1)
 train_data = train_data.drop(["PassengerId"], axis=1)
@@ -69,12 +69,26 @@ numerical_cols = ['Age', 'Fare']
 X = train_data.drop(columns=['Survived'],axis=1)
 y = train_data['Survived']
 
+r = [0, 5, 16, 26, 32, 47, 63, 90]
+g = [0, 1, 2, 3, 4, 5, 6]
+train_data["Age"] = pd.cut(train_data['Age'], bins=r, labels=g)
+train_data.Age = train_data.Age.astype(int)
+
 scaler = StandardScaler().fit(X[numerical_cols])
 X[numerical_cols] = scaler.transform(X[numerical_cols])
 X.head(15)
 
 test_scaler = StandardScaler().fit(test_data[numerical_cols])
 test_data[numerical_cols] = test_scaler.transform(test_data[numerical_cols])
+
+from scipy import stats
+z = np.abs(stats.zscore(train_data["SibSp"]))
+threshold = 3
+train_data2 = train_data.copy()
+train_data2 = train_data2[(z<3)]
+train_data2.hist(bins=15)
+z = np.abs(stats.zscore(train_data2["Title"]))
+train_data2 = train_data2[(z<3)]
 
 #m = len(y)
 #theta = np.zeros([2,1])
@@ -108,3 +122,30 @@ submission = pd.DataFrame({
     })
 
 submission.to_csv('submission.csv', index=False)
+
+
+
+
+clf_rr = Ridge(normalize=True)
+clf_rr.fit(X_train , y_train)
+accuracies = cross_val_score(estimator = clf_rr, X = X_train, y = y_train, cv = 5,verbose = 1)
+y_pred = clf_rr.predict(X_test)
+print('')
+print('###### Ridge Regression ######')
+print('Score : %.4f' % clf_rr.score(X_test, y_test))
+print(accuracies)
+
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+rmse = mean_squared_error(y_test, y_pred)**0.5
+r2 = r2_score(y_test, y_pred)
+
+print('')
+print('MSE    : %0.2f ' % mse)
+print('MAE    : %0.2f ' % mae)
+print('RMSE   : %0.2f ' % rmse)
+print('R2     : %0.2f ' % r2)
+
+R2_Scores.append(r2)
+
+
